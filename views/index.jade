@@ -1,4 +1,29 @@
 extends layout
 
 block content
-    h1 index
+    #navbar.block
+        span#user-name #{pageData.user}
+        span#total-cash 0
+    .row.block
+        button#add-spending-btn
+            i.fa.fa-plus
+    #add-spending.row.block(style='display: none')
+        .row
+            input.value(placeholder='Value')
+        .row
+            input.date(placeholder='Date')
+        .row
+            select.category
+                option(value='0')
+                    | no category
+                option(value='1')
+                    | category 1
+                option(value='2')
+                    | category 2
+        .row
+            button.submit
+                i.fa.fa-cart-plus
+    include include/lib/js
+    script.
+        var _user = '#{pageData.user}';
+    script(src='/js/index.js')

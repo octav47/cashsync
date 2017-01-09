@@ -11,6 +11,8 @@
     "cookie-sessions": "*",
     "debug": "~2.2.0",
     "express": "*",
+    "express-authentication": "*",
+    "express-authentication-basic": "*",
     "connect": "*",
     "jade": "~1.11.0",
     "morgan": "~1.7.0",
