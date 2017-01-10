@@ -5,6 +5,7 @@
     var _now = new Date();
 
     var _data = {};
+    var _categories = {};
 
     function formatDate(date) {
         var d = date.getDate();
@@ -45,7 +46,7 @@
             isNewBlock = true;
         }
 
-        block.append('<div class="row"><input value="' + value + '"><input value="' + category + '"></div>');
+        block.append('<div class="row"><input value="' + value + '"><input value="' + _categories[category] + '"></div>');
 
         if (isNewBlock) {
             block.insertAfter(addSpending);
@@ -59,11 +60,13 @@
     }
 
     function init() {
-        $.get('/data/dates.json', function (data) {
-            _data = data.dates;
+        $.when($.get('/data/categories.json'), $.get('/data/dates.json'))
+            .then(function (res1, res2) {
+                _categories = res1[0].categories;
 
-            createDates(_data);
-        });
+                _data = res2[0].dates;
+                createDates(_data);
+            });
 
         addSpending.find('.date').datepicker({
             showOtherMonths: true,
