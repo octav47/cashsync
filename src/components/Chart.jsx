@@ -2,63 +2,24 @@ import React from 'react';
 import Highstocks from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
+import SeriesFactory from '../Entities/SeriesFactory'
+
 import { mean, median } from '../utils/array';
+import { getDataItem } from '../utils/items'
 
 import data from '../../data/data.json';
 
 const { items } = data;
 
-const getX = dateString => {
-  const [y, m, d] = dateString.split('-');
+const seriesFactory = new SeriesFactory()
 
-  return Date.UTC(y, m - 1, d);
-};
-
-const getDataItem = (dateString, amount = 0) => {
-  return {
-    x: getX(dateString),
-    y: amount,
-  };
-};
-
-const seriesMap = {};
-
-const createSeries = (
-  name,
-  maxArrayLength,
-  mathFunc,
-  seriesOptions = {
-    dashStyle: 'Solid',
-  }
-) => {
-  if (!seriesMap[name]) {
-    seriesMap[name] = [];
-  }
-
-  return {
-    type: 'spline',
-    name,
-    data: Object.keys(items).map(dateString => {
-      const item = items[dateString];
-
-      if (seriesMap[name].length === maxArrayLength) {
-        seriesMap[name] = seriesMap[name].slice(1);
-      }
-
-      seriesMap[name].push(item.spending.sum);
-
-      return getDataItem(dateString, mathFunc(seriesMap[name]));
-    }),
-    ...seriesOptions,
-  };
-};
 
 const options = {
   title: {
     text: 'Mean and median',
   },
   chart: {
-    height: '1000px',
+    height: '800px',
   },
   legend: {
     enabled: true,
@@ -90,18 +51,27 @@ const options = {
     },
   ],
   series: [
-    createSeries('median 2w', 14, median),
-    createSeries('mean 2w', 14, mean, {
+    seriesFactory.createArray('median 2w', 14, median),
+    seriesFactory.createArray('mean 2w', 14, mean, {
       dashStyle: 'Dash',
     }),
-    createSeries('median 1w', 7, median),
-    createSeries('mean 1w', 7, mean, {
+    seriesFactory.createArray('median 1w', 7, median),
+    seriesFactory.createArray('mean 1w', 7, mean, {
       dashStyle: 'Dash',
     }),
-    createSeries('median 30d', 30, median),
-    createSeries('mean 30d', 30, mean, {
+    seriesFactory.createArray('median 30d', 30, median),
+    seriesFactory.createArray('mean 30d', 30, mean, {
       dashStyle: 'Dash',
     }),
+    {
+      type: 'spline',
+      name: 'current balance',
+      data: Object.keys(items).map(dateString => {
+        const item = items[dateString];
+
+        return getDataItem(dateString, item.current);
+      }),
+    },
   ],
 };
 

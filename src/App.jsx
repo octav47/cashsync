@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 
-import Stats from './Stats';
-import Chart from './components/Chart';
+const LazyStats = lazy(() => new Promise((resolve, reject) => {
+  import('./Stats')
+    .then(result => resolve(result.default ? result : { default: result }))
+    .catch(reject);
+}))
+
+const LazyChart = lazy(() => new Promise((resolve, reject) => {
+  import('./components/Chart')
+    .then(result => resolve(result.default ? result : { default: result }))
+    .catch(reject);
+}))
 
 const App = () => (
   <div>
-    <Stats />
-    <Chart />
+    <Suspense fallback="Loading...">
+    	<LazyStats />
+    </Suspense>
+    <Suspense fallback="Loading...">
+    	<LazyChart />
+    </Suspense>
   </div>
 );
 

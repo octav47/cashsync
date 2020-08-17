@@ -43,6 +43,7 @@ const parseFile = filePath => {
 
     if (!dataJSON.items[date]) {
       dataJSON.items[date] = {
+        current: 0,
         sum: 0,
         income: {
           sum: 0,
@@ -69,6 +70,23 @@ const parseFile = filePath => {
   });
 
   dataJSON.balance = dataJSON.total.income + dataJSON.total.spending;
+
+  Object.keys(dataJSON.items).forEach((key, i, keys) => {
+    if (i > 0) {
+      const item = dataJSON.items[key];
+      const prev = dataJSON.items[keys[i - 1]];
+
+      item.current = prev.current + item.sum;
+
+      dataJSON.items[key] = item;
+    } else {
+      const item = dataJSON.items[key];
+
+      item.current = item.sum;
+
+      dataJSON.items[key] = item;
+    }
+  });
 
   return dataJSON;
 };
